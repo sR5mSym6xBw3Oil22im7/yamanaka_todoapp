@@ -20,7 +20,7 @@
 
     <insert id="insert">
         INSERT INTO todos (title, detail, category, priority, due_date)
-        VALUES (#{title}, #{detail}, #{category}, COALESCE(#{priority}, 2), #{dueDate})
+        VALUES (#{title}, #{detail}, #{category}, #{priority}, #{dueDate})
     </insert>
 
     <update id="update">

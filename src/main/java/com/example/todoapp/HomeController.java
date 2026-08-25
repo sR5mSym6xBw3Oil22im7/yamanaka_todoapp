@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -39,12 +38,7 @@ public class HomeController {
     }
 
     @PostMapping("/todos/confirm")
-    public String createConfirm(@ModelAttribute Todo todo, BindingResult bindingResult, Model model) {
-        validateCreate(todo, bindingResult);
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("todo", todo);
-            return "create";
-        }
+    public String createConfirm(@ModelAttribute Todo todo, Model model) {
         model.addAttribute("todo", todo);
         return "create-confirm";
     }
@@ -57,26 +51,9 @@ public class HomeController {
 
     @PostMapping("/todos")
     public String save(@ModelAttribute Todo todo, RedirectAttributes redirectAttributes) {
-        // The confirmation form can be submitted directly, so keep the DB-safe
-        // default here as well as in the input screen.
-        if (todo.getPriority() == null) {
-            todo.setPriority(2);
-        }
         todoMapper.insert(todo);
         redirectAttributes.addFlashAttribute("message", "登録しました");
         return "redirect:/todos";
-    }
-
-    private void validateCreate(Todo todo, BindingResult bindingResult) {
-        if (todo.getTitle() == null || todo.getTitle().isBlank()) {
-            bindingResult.rejectValue("title", "required", "やることを入力してください");
-        }
-        if (todo.getCategory() == null || todo.getCategory().isBlank()) {
-            bindingResult.rejectValue("category", "required", "ジャンルを選択してください");
-        }
-        if (todo.getPriority() != null && (todo.getPriority() < 1 || todo.getPriority() > 3)) {
-            bindingResult.rejectValue("priority", "invalid", "優先度を選択してください");
-        }
     }
 
     @GetMapping("/todos/{id}/edit")

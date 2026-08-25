@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <p class="flash" th:if="${message}" th:text="${message}">message</p>
+        <p class="flash" th:if="${message}" th:text="${message}"></p>
         <h1 class="page-title">やること一覧</h1>
 
         <p><a class="btn" href="/todos/new">新規登録</a></p>
@@ -25,11 +25,11 @@
             </thead>
             <tbody>
             <tr th:each="todo : ${todos}">
-                <td th:text="${todo.title}">やること</td>
-                <td th:text="${todo.category}">ジャンル</td>
-                <td th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}">優先度</td>
-                <td th:text="${todo.dueDate}">期限</td>
-                <td th:text="${todo.completed ? '完了' : '未完了'}">状態</td>
+                <td th:text="${todo.title}"></td>
+                <td th:text="${todo.category}"></td>
+                <td th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></td>
+                <td th:text="${todo.dueDate}"></td>
+                <td th:text="${todo.completed ? '完了' : '未完了'}"></td>
             </tr>
             </tbody>
         </table>
