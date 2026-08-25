@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テスト仕様書</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #1f2937; background: #fff; font-family: sans-serif; font-size: 12px; line-height: 1.35; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; }
+        h1 { margin: 0; font-size: 20px; }
+        .print-button { border: 1px solid #334155; border-radius: 5px; padding: 6px 12px; background: #334155; color: #fff; cursor: pointer; font-size: 12px; }
+        table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+        col.no { width: 5%; } col.check { width: 20%; } col.value { width: 15%; } col.expected { width: 25%; } col.result { width: 10%; } col.note { width: 25%; }
+        th, td { border: 1px solid #9ca3af; padding: 4px 5px; vertical-align: top; overflow-wrap: anywhere; }
+        th { background: #e5e7eb; text-align: left; font-weight: bold; }
+        .result-cell { white-space: nowrap; }
+        .result-cell label { display: inline-block; margin-right: 5px; }
+        textarea { display: block; width: 100%; min-height: 34px; resize: vertical; border: 1px solid #9ca3af; padding: 3px; font: inherit; line-height: 1.35; }
+        @media print {
+            @page { size: auto; margin: 10mm; }
+            .print-button { display: none; }
+            body { font-size: 10px; }
+            header { padding: 0 0 6px; }
+            h1 { font-size: 16px; }
+            th, td { padding: 3px 4px; }
+            textarea { overflow: visible; resize: none; }
+            tr { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>テスト仕様書</h1>
+        <button class="print-button" type="button" onclick="window.print()">PDFで保存</button>
+    </header>
+    <table>
+        <colgroup><col class="no"><col class="check"><col class="value"><col class="expected"><col class="result"><col class="note"></colgroup>
+        <thead><tr><th>番号</th><th>確かめること</th><th>入れる値</th><th>期待する結果</th><th>結果</th><th>備考/NG</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>一覧表示ができること</td><td>http://localhost:8080/todos を開く</td><td>登録されている5件のやることが1画面に並んで表示される。</td><td class="result-cell"><label><input type="radio" name="r1">OK</label><label><input type="radio" name="r1">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>2</td><td>新しいやることを登録できること</td><td>後の18番で登録する</td><td>入力したやることが一覧に1件追加されて表示される。</td><td class="result-cell"><label><input type="radio" name="r2">OK</label><label><input type="radio" name="r2">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>3</td><td>登録したやることを編集できること</td><td>後の19〜21番で確認する</td><td>変更した内容が一覧に表示される。</td><td class="result-cell"><label><input type="radio" name="r3">OK</label><label><input type="radio" name="r3">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>4</td><td>登録したやることを削除できること</td><td>後の22〜24番で確認する</td><td>選んだやることが一覧から表示されなくなる。</td><td class="result-cell"><label><input type="radio" name="r4">OK</label><label><input type="radio" name="r4">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>5</td><td>やることの名前で検索できること</td><td>後の23番で確認する</td><td>入力した言葉を名前の一部に含むやることだけが一覧に表示される。</td><td class="result-cell"><label><input type="radio" name="r5">OK</label><label><input type="radio" name="r5">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>6</td><td>期限の順に並び替えできること</td><td>後の31〜33番で確認する</td><td>選んだ並び方の期限順で一覧が表示される。</td><td class="result-cell"><label><input type="radio" name="r6">OK</label><label><input type="radio" name="r6">NG</label></td><td><textarea></textarea></td></tr>
+
+            <tr><td>7</td><td>一覧画面の内容を確認する</td><td>/todos</td><td>やること・ジャンル・優先度・期限・状態・操作（編集・削除）が左から順に表示される。</td><td class="result-cell"><label><input type="radio" name="r7">OK</label><label><input type="radio" name="r7">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>8</td><td>登録画面の内容を確認する</td><td>「新規登録」を押す</td><td>やること・メモ・ジャンル・優先度・期限の入力欄と「確認する」「一覧へ」が表示される。</td><td class="result-cell"><label><input type="radio" name="r8">OK</label><label><input type="radio" name="r8">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>9</td><td>登録画面で必須欄が空のときに止まること</td><td>すべて空のまま「確認する」</td><td>登録画面に留まり、やることの下に「やることを入力してください」、ジャンルの下に「ジャンルを選んでください」、優先度の下に「優先度を選んでください」が表示される。</td><td class="result-cell"><label><input type="radio" name="r9">OK</label><label><input type="radio" name="r9">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>10</td><td>やることが空白だけのときに止まること</td><td>やること：半角空白または全角空白だけ</td><td>登録画面に留まり、やることの下に「やることを入力してください」が表示される。</td><td class="result-cell"><label><input type="radio" name="r10">OK</label><label><input type="radio" name="r10">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>11</td><td>やることが255文字を超えたときに止まること</td><td>やること：256文字、ジャンル：プログラミング、優先度：中</td><td>登録画面に留まり、やることの下に「やることは255文字以内で入力してください」が表示される。</td><td class="result-cell"><label><input type="radio" name="r11">OK</label><label><input type="radio" name="r11">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>12</td><td>メモが255文字を超えたときに止まること</td><td>やること：テスト登録A、メモ：256文字、ジャンル：プログラミング、優先度：中</td><td>登録画面に留まり、メモの下に「メモは255文字以内で入力してください」が表示される。</td><td class="result-cell"><label><input type="radio" name="r12">OK</label><label><input type="radio" name="r12">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>13</td><td>ジャンルを選ばないときに止まること</td><td>やること：テスト登録A、ジャンル：未選択、優先度：中</td><td>登録画面に留まり、ジャンルの下に「ジャンルを選んでください」が表示される。</td><td class="result-cell"><label><input type="radio" name="r13">OK</label><label><input type="radio" name="r13">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>14</td><td>優先度を選ばないときに止まること</td><td>やること：テスト登録A、ジャンル：プログラミング、優先度：未選択</td><td>登録画面に留まり、優先度の下に「優先度を選んでください」が表示される。</td><td class="result-cell"><label><input type="radio" name="r14">OK</label><label><input type="radio" name="r14">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>15</td><td>入力した内容を登録確認画面で文字として確認する</td><td>やること：テスト登録A、メモ：Aのメモ、ジャンル：プログラミング、優先度：高、期限：2099-01-02</td><td>登録確認画面に5つの値が入力欄ではなく文字で並び、登録する・書き直すが表示される。</td><td class="result-cell"><label><input type="radio" name="r15">OK</label><label><input type="radio" name="r15">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>16</td><td>未入力の値を登録確認画面で表示する</td><td>メモと期限を空にして「確認する」</td><td>登録確認画面で、メモと期限が「（入力なし）」と表示される。</td><td class="result-cell"><label><input type="radio" name="r16">OK</label><label><input type="radio" name="r16">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>17</td><td>書き直す操作で入力内容を保持する</td><td>登録確認画面で「書き直す」</td><td>登録画面に戻り、入力した値が入ったまま表示される。</td><td class="result-cell"><label><input type="radio" name="r17">OK</label><label><input type="radio" name="r17">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>18</td><td>登録確認画面から登録する</td><td>15番の値で「登録する」</td><td>一覧に「テスト登録A」が表示され、いちばん上に「登録しました」が表示される。</td><td class="result-cell"><label><input type="radio" name="r18">OK</label><label><input type="radio" name="r18">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>19</td><td>編集画面の内容を確認する</td><td>テスト登録Aの行の「編集」</td><td>やること・メモ・ジャンル・優先度・期限・完了の入力欄が、現在の値が入った状態で表示される。</td><td class="result-cell"><label><input type="radio" name="r19">OK</label><label><input type="radio" name="r19">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>20</td><td>編集確認画面を表示する</td><td>やることを「テスト編集A」に変更して「確認する」</td><td>編集確認画面に変更後の5つの値と「保存する」「書き直す」が表示される。</td><td class="result-cell"><label><input type="radio" name="r20">OK</label><label><input type="radio" name="r20">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>21</td><td>編集確認画面から保存する</td><td>「保存する」</td><td>一覧に「テスト編集A」が表示され、いちばん上に「保存しました」が表示される。</td><td class="result-cell"><label><input type="radio" name="r21">OK</label><label><input type="radio" name="r21">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>22</td><td>削除確認画面の内容を確認する</td><td>テスト編集Aの行の「削除」</td><td>削除確認画面に、やること・ジャンル・期限が表示され、入力欄なしで「消す」「やめる」が表示される。</td><td class="result-cell"><label><input type="radio" name="r22">OK</label><label><input type="radio" name="r22">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>23</td><td>削除をやめて一覧へ戻る</td><td>削除確認画面で「やめる」</td><td>一覧に戻り、テスト編集Aが表示される。</td><td class="result-cell"><label><input type="radio" name="r23">OK</label><label><input type="radio" name="r23">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>24</td><td>削除確認画面から削除する</td><td>テスト編集Aの「削除」から「消す」</td><td>一覧からテスト編集Aが消え、いちばん上に「削除しました」が表示される。</td><td class="result-cell"><label><input type="radio" name="r24">OK</label><label><input type="radio" name="r24">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>25</td><td>存在しない番号を編集で開く</td><td>/todos/999999/edit</td><td>一覧に戻り、いちばん上に「見つかりませんでした」が表示される。</td><td class="result-cell"><label><input type="radio" name="r25">OK</label><label><input type="radio" name="r25">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>26</td><td>存在しない番号を削除確認で開く</td><td>/todos/999999/delete</td><td>一覧に戻り、いちばん上に「見つかりませんでした」が表示される。</td><td class="result-cell"><label><input type="radio" name="r26">OK</label><label><input type="radio" name="r26">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>27</td><td>名前の一部で絞り込む</td><td>名前：テスト、ジャンル：すべて、「絞り込む」</td><td>名前に「テスト」を一部でも含むやることだけが一覧に表示される。</td><td class="result-cell"><label><input type="radio" name="r27">OK</label><label><input type="radio" name="r27">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>28</td><td>ジャンルを完全一致で絞り込む</td><td>名前：空、ジャンル：プログラミング、「絞り込む」</td><td>ジャンルが「プログラミング」とぴったり同じやることだけが一覧に表示される。</td><td class="result-cell"><label><input type="radio" name="r28">OK</label><label><input type="radio" name="r28">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>29</td><td>名前とジャンルが空のときに全件を表示する</td><td>名前：空、ジャンル：すべて、「絞り込む」</td><td>絞り込まれず、登録されているすべてのやることが一覧に表示される。</td><td class="result-cell"><label><input type="radio" name="r29">OK</label><label><input type="radio" name="r29">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>30</td><td>絞り込み結果が0件のときの文を確認する</td><td>名前：存在しない名前999、「絞り込む」</td><td>一覧に「まだ1件も登録されていません」と表示される。</td><td class="result-cell"><label><input type="radio" name="r30">OK</label><label><input type="radio" name="r30">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>31</td><td>期限が近い順に並び替える</td><td>テスト登録Bを期限：2099-01-01で登録し、「期限が近い順」</td><td>期限が入力されたやることが、2099-01-01、2099-01-02の順で表示される。</td><td class="result-cell"><label><input type="radio" name="r31">OK</label><label><input type="radio" name="r31">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>32</td><td>期限が遠い順に並び替える</td><td>「期限が遠い順」</td><td>期限が入力されたやることが、2099-01-02、2099-01-01の順で表示される。</td><td class="result-cell"><label><input type="radio" name="r32">OK</label><label><input type="radio" name="r32">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>33</td><td>期限未入力のやることを最後に表示する</td><td>期限を空にしたテスト登録Cを登録後、「期限が近い順」</td><td>期限が入力されたやることが日付順に表示され、期限未入力のテスト登録Cが最後に表示される。</td><td class="result-cell"><label><input type="radio" name="r33">OK</label><label><input type="radio" name="r33">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>34</td><td>アドレスに絞り込み条件と並びの向きが付くこと</td><td>27番の条件で「絞り込む」</td><td>表示された一覧のアドレスの後ろに、keyword・category・orderの値が付いている。</td><td class="result-cell"><label><input type="radio" name="r34">OK</label><label><input type="radio" name="r34">NG</label></td><td><textarea></textarea></td></tr>
+            <tr><td>35</td><td>テストで増やした行を削除して5行へ戻す</td><td>テスト登録Bとテスト登録Cを削除する</td><td>一覧に元の5件だけが表示される。</td><td class="result-cell"><label><input type="radio" name="r35">OK</label><label><input type="radio" name="r35">NG</label></td><td><textarea></textarea></td></tr>
+        </tbody>
+    </table>
+    <script>
+        function resizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        document.querySelectorAll('textarea').forEach(function (textarea) {
+            textarea.addEventListener('input', function () { resizeTextarea(textarea); });
+            resizeTextarea(textarea);
+        });
+        window.addEventListener('beforeprint', function () {
+            document.querySelectorAll('textarea').forEach(resizeTextarea);
+        });
+    </script>
+</body>
+</html>
