@@ -1,3 +1,6 @@
+### 0. 条件付きで一覧取得する
+GET http://localhost:8080/api/todos?category=就職活動
+
 ### 1. 1件登録する
 POST http://localhost:8080/api/todos
 Content-Type: application/json
@@ -10,10 +13,10 @@ Content-Type: application/json
 }
 
 ### 2. 1件取得する
-GET http://localhost:8080/api/todos/1
+GET http://localhost:8080/api/todos/15
 
 ### 3. 1件更新する
-PUT http://localhost:8080/api/todos/1
+PUT http://localhost:8080/api/todos/15
 Content-Type: application/json
 
 {
@@ -26,4 +29,4 @@ Content-Type: application/json
 }
 
 ### 4. 1件削除する
-DELETE http://localhost:8080/api/todos/1
+DELETE http://localhost:8080/api/todos/15
