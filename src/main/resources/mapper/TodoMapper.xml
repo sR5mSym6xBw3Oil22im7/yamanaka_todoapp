@@ -30,9 +30,9 @@
         WHERE id = #{id}
     </select>
 
-    <insert id="insert">
-        INSERT INTO todos (title, detail, category, priority, due_date)
-        VALUES (#{title}, #{detail}, #{category}, #{priority}, #{dueDate})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO todos (title, detail, category, priority, due_date, completed)
+        VALUES (#{title}, #{detail}, #{category}, #{priority}, #{dueDate}, COALESCE(#{completed}, false))
     </insert>
 
     <update id="update">
