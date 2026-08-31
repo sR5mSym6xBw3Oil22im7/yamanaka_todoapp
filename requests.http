@@ -6,7 +6,7 @@ POST http://localhost:8080/api/todos
 Content-Type: application/json
 
 {
-  "title": "APIの動作を確認する",
+  "title": "",
   "category": "プログラミング",
   "priority": 2,
   "dueDate": "2026-09-30"
