@@ -14,7 +14,7 @@ import java.util.List;
 @Controller
 public class CalendarController {
 
-    @GetMapping({"/calendar", "/calender"})
+    @GetMapping("/calendar")
     public String calendar(
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
