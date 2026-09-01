@@ -60,7 +60,38 @@
             });
         }
 
+        async function loadHolidays() {
+            const calendarTable = document.querySelector('.calendar-table');
+            const from = calendarTable.dataset.from;
+            const to = calendarTable.dataset.to;
+            const params = new URLSearchParams({ from, to });
+            const res = await fetch(`/api/holidays?${params}`);
+            const holidays = await res.json();
+
+            if (res.headers.has('X-Holidays-Unavailable')) {
+                const message = document.createElement('p');
+                message.textContent = '祝日を取れませんでした';
+                document.querySelector('main').prepend(message);
+            }
+
+            document.querySelectorAll('[data-date]').forEach(cell => {
+                const date = new Date(`${cell.dataset.date}T00:00:00`);
+                const dayOfWeek = date.getDay();
+                const holidayName = holidays[cell.dataset.date];
+
+                if (holidayName) {
+                    cell.style.backgroundColor = '#fef3c7';
+                    cell.title = holidayName;
+                } else if (dayOfWeek === 0) {
+                    cell.style.backgroundColor = '#fee2e2';
+                } else if (dayOfWeek === 6) {
+                    cell.style.backgroundColor = '#dbeafe';
+                }
+            });
+        }
+
         loadTodos();
+        loadHolidays();
     </script>
 </body>
 </html>
