@@ -117,3 +117,49 @@ body {
    color: #334155;
    text-decoration: underline;
 }
+
+.calendar-page {
+   max-width: 1000px;
+}
+
+.calendar-navigation {
+   display: flex;
+   justify-content: space-between;
+   margin-bottom: 16px;
+}
+
+.calendar-table {
+   width: 100%;
+   border-collapse: collapse;
+   table-layout: fixed;
+}
+
+.calendar-table th,
+.calendar-table td {
+   border: 1px solid #94a3b8;
+}
+
+.calendar-table th {
+   padding: 8px;
+   background: #f1f5f9;
+   text-align: center;
+}
+
+.calendar-table td {
+   height: 100px;
+   padding: 8px;
+   vertical-align: top;
+}
+
+.calendar-table th:first-child {
+   color: #b91c1c;
+}
+
+.calendar-table th:last-child {
+   color: #1d4ed8;
+}
+
+.calendar-day-number {
+   display: block;
+   font-weight: bold;
+}
