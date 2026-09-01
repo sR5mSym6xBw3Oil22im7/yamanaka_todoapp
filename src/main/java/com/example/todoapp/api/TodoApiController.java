@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,8 +38,10 @@ public class TodoApiController {
     public List<TodoDto> todos(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") String category,
-            @RequestParam(defaultValue = "asc") String order) {
-        return todoService.search(keyword, category, order)
+            @RequestParam(defaultValue = "asc") String order,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to) {
+        return todoService.search(keyword, category, order, from, to)
                 .stream()
                 .map(TodoDto::from)
                 .toList();
