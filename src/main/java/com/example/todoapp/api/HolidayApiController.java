@@ -3,6 +3,7 @@ package com.example.todoapp.api;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
@@ -18,16 +19,23 @@ public class HolidayApiController {
     }
 
     @GetMapping("/api/holidays")
-    public Map<String, String> holidays(
+    public ResponseEntity<Map<String, String>> holidays(
             @RequestParam(required = false) LocalDate from,
             @RequestParam(required = false) LocalDate to) {
-        Map<String, String> holidays = holidayClient.fetch();
+        HolidayClient.FetchResult fetchResult = holidayClient.fetchWithStatus();
+        Map<String, String> holidays = fetchResult.holidays();
 
-        return holidays.entrySet().stream()
+        Map<String, String> result = holidays.entrySet().stream()
                 .filter(entry -> isInRange(entry.getKey(), from, to))
                 .collect(LinkedHashMap::new,
-                        (result, entry) -> result.put(entry.getKey(), entry.getValue()),
+                        (collected, entry) -> collected.put(entry.getKey(), entry.getValue()),
                         LinkedHashMap::putAll);
+
+        ResponseEntity.BodyBuilder response = ResponseEntity.ok();
+        if (fetchResult.unavailable()) {
+            response.header("X-Holidays-Unavailable", "true");
+        }
+        return response.body(result);
     }
 
     private boolean isInRange(String dateText, LocalDate from, LocalDate to) {
