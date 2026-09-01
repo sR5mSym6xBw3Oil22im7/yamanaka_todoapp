@@ -13,6 +13,8 @@
         <nav class="calendar-navigation" aria-label="月の移動">
             <a class="btn sub" th:href="@{/calendar(year=${previousYear}, month=${previousMonth})}">前の月</a>
             <a class="btn sub" th:href="@{/calendar(year=${nextYear}, month=${nextMonth})}">次の月</a>
+            <a class="btn sub" href="/todos">表で見る</a>
+            <a class="btn" href="/todos/new">新規登録</a>
         </nav>
 
         <table class="calendar-table"
@@ -68,7 +70,9 @@
                 }
 
                 dateTodos.slice(0, 3).forEach(todo => {
-                    const todoName = document.createElement('div');
+                    const todoName = document.createElement('a');
+                    todoName.href = `/todos/${todo.id}/edit`;
+                    todoName.className = 'link';
                     todoName.textContent = todo.title;
                     if (todo.dueDate < todayString && !todo.completed) {
                         todoName.style.color = '#b91c1c';

@@ -125,7 +125,12 @@ body {
 .calendar-navigation {
    display: flex;
    justify-content: space-between;
+   align-items: center;
    margin-bottom: 16px;
+}
+
+.calendar-navigation a:nth-child(3) {
+   margin-left: auto;
 }
 
 .calendar-table {
