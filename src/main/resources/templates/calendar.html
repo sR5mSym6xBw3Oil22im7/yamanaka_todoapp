@@ -50,12 +50,36 @@
             const res = await fetch(`/api/todos?${params}`);
             const todos = await res.json();
 
+            const today = new Date();
+            const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const todosByDate = {};
+
             todos.forEach(todo => {
-                const cell = document.querySelector(`[data-date="${todo.dueDate}"]`);
-                if (cell) {
+                if (!todosByDate[todo.dueDate]) {
+                    todosByDate[todo.dueDate] = [];
+                }
+                todosByDate[todo.dueDate].push(todo);
+            });
+
+            Object.entries(todosByDate).forEach(([dueDate, dateTodos]) => {
+                const cell = document.querySelector(`[data-date="${dueDate}"]`);
+                if (!cell) {
+                    return;
+                }
+
+                dateTodos.slice(0, 3).forEach(todo => {
                     const todoName = document.createElement('div');
                     todoName.textContent = todo.title;
+                    if (todo.dueDate < todayString && !todo.completed) {
+                        todoName.style.color = '#b91c1c';
+                    }
                     cell.appendChild(todoName);
+                });
+
+                if (dateTodos.length > 3) {
+                    const remaining = document.createElement('div');
+                    remaining.textContent = `ほか ${dateTodos.length - 3}件`;
+                    cell.appendChild(remaining);
                 }
             });
         }
