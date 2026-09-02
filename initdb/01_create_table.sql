@@ -5,6 +5,7 @@ CREATE TABLE todos (
     category VARCHAR(255) NOT NULL,
     priority INT NOT NULL DEFAULT 2,
     due_date DATE NULL,
+    pinned BOOLEAN NOT NULL DEFAULT FALSE,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
     completed_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

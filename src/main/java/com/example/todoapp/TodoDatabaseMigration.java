@@ -15,6 +15,13 @@ public class TodoDatabaseMigration {
 
     @PostConstruct
     public void addCompletedAtColumnIfNeeded() {
+        Integer pinnedColumnCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.columns "
+                        + "WHERE table_schema = DATABASE() AND table_name = 'todos' "
+                        + "AND column_name = 'pinned'", Integer.class);
+        if (pinnedColumnCount != null && pinnedColumnCount == 0) {
+            jdbcTemplate.execute("ALTER TABLE todos ADD COLUMN pinned BOOLEAN NOT NULL DEFAULT FALSE");
+        }
         Integer columnCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM information_schema.columns "
                         + "WHERE table_schema = DATABASE() "

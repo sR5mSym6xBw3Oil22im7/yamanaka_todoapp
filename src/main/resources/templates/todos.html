@@ -42,6 +42,7 @@
         <table class="todo-table" th:if="${!#lists.isEmpty(todos)}">
             <thead>
             <tr>
+                <th>印</th>
                 <th>やること</th>
                 <th>ジャンル</th>
                 <th>優先度</th>
@@ -54,6 +55,16 @@
             <tr th:each="todo : ${todos}"
                 th:attr="data-completed-at=${todo.completedAt}"
                 th:classappend="${todo.dueDate != null and todo.dueDate.isBefore(T(java.time.LocalDate).now()) and !todo.completed} ? ' overdue' : ''">
+                <td>
+                    <form th:if="${trash == 0}" th:action="@{/todos/{id}/pin(id=${todo.id})}" method="post">
+                        <input type="hidden" name="keyword" th:value="${keyword}">
+                        <input type="hidden" name="category" th:value="${category}">
+                        <input type="hidden" name="order" th:value="${order}">
+                        <input type="hidden" name="page" th:value="${page}">
+                        <input type="hidden" name="trash" th:value="${trash}">
+                        <button class="link" type="submit" th:attr="aria-label=${todo.pinned ? '印を外す' : '印を付ける'}" th:text="${todo.pinned ? '★' : '☆'}"></button>
+                    </form>
+                </td>
                 <td th:text="${todo.title}"></td>
                 <td th:text="${todo.category}"></td>
                 <td>

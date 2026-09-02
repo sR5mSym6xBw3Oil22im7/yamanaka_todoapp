@@ -64,6 +64,7 @@ public class TodoService {
 
     public void update(Todo todo) {
         Todo existing = todoMapper.findById(todo.getId());
+        todo.setPinned(existing.getPinned());
         boolean wasCompleted = Boolean.TRUE.equals(existing.getCompleted());
         boolean isCompleted = Boolean.TRUE.equals(todo.getCompleted());
         if (!wasCompleted && isCompleted) {
@@ -89,5 +90,10 @@ public class TodoService {
     public void restore(Long id) {
         todoMapper.restoreById(id);
         log.info("Todo restored successfully: id={}", id);
+    }
+
+    public void togglePinned(Long id) {
+        todoMapper.togglePinned(id);
+        log.info("Todo pinned state toggled successfully: id={}", id);
     }
 }
