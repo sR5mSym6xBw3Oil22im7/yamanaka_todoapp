@@ -118,8 +118,51 @@
             });
         }
 
+        async function loadWeather() {
+            const calendarTable = document.querySelector('.calendar-table');
+            const from = calendarTable.dataset.from;
+            const to = calendarTable.dataset.to;
+            const params = new URLSearchParams({ from, to });
+
+            try {
+                const res = await fetch(`/api/weather?${params}`);
+                if (!res.ok) {
+                    return;
+                }
+                const weatherByDate = await res.json();
+                const weatherLabels = {
+                    0: '快晴', 1: '晴れ', 2: 'くもり', 3: '曇天',
+                    45: '霧', 48: '霧', 51: '小雨', 53: '小雨', 55: '小雨',
+                    61: '雨', 63: '雨', 65: '大雨', 71: '雪', 73: '雪', 75: '大雪',
+                    80: 'にわか雨', 81: 'にわか雨', 82: '強いにわか雨',
+                    95: '雷雨', 96: '雷雨', 99: '雷雨'
+                };
+
+                Object.entries(weatherByDate).forEach(([date, weather]) => {
+                    const cell = document.querySelector(`[data-date="${date}"]`);
+                    if (!cell || weather.weatherCode === null) {
+                        return;
+                    }
+                    const weatherText = document.createElement('div');
+                    const label = weatherLabels[weather.weatherCode] || '天気';
+                    const temperatures = weather.temperatureMax !== null && weather.temperatureMin !== null
+                        ? ` ${Math.round(weather.temperatureMax)}℃/${Math.round(weather.temperatureMin)}℃`
+                        : '';
+                    const precipitation = weather.precipitationProbability !== null
+                        ? ` 降水${weather.precipitationProbability}%`
+                        : '';
+                    weatherText.className = 'calendar-weather';
+                    weatherText.textContent = `${label}${temperatures}${precipitation}`;
+                    cell.appendChild(weatherText);
+                });
+            } catch (error) {
+                // 天気が取得できなくても、カレンダーと他の情報は表示する。
+            }
+        }
+
         loadTodos();
         loadHolidays();
+        loadWeather();
     </script>
 </body>
 </html>

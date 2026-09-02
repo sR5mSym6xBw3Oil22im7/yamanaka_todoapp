@@ -191,3 +191,10 @@ body {
    display: block;
    font-weight: bold;
 }
+
+.calendar-weather {
+   margin-top: 4px;
+   color: #bae6fd;
+   font-size: 12px;
+   line-height: 1.4;
+}
