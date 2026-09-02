@@ -64,6 +64,13 @@
             </tbody>
         </table>
 
+        <nav class="pagination" th:if="${totalPages > 0}" aria-label="Pages">
+            <a class="link" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+               th:href="@{/todos(keyword=${keyword}, category=${category}, order=${order}, page=${pageNumber})}"
+               th:text="${pageNumber}"
+               th:classappend="${pageNumber == page} ? ' current' : ''"></a>
+        </nav>
+
         <p th:if="${#lists.isEmpty(todos)}">まだ1件も登録されていません</p>
     </div>
 </body>

@@ -10,6 +10,8 @@ import java.util.List;
 @Slf4j
 public class TodoService {
 
+    public static final int PAGE_SIZE = 10;
+
     private final TodoMapper todoMapper;
 
     public TodoService(TodoMapper todoMapper) {
@@ -23,6 +25,16 @@ public class TodoService {
     public List<Todo> search(String keyword, String category, String order,
                              LocalDate from, LocalDate to) {
         return todoMapper.search(keyword, category, order, from, to);
+    }
+
+    public List<Todo> searchPage(String keyword, String category, String order,
+                                 LocalDate from, LocalDate to, int page) {
+        return todoMapper.searchPage(keyword, category, order, from, to,
+                PAGE_SIZE, (page - 1) * PAGE_SIZE);
+    }
+
+    public int countSearch(String keyword, String category, LocalDate from, LocalDate to) {
+        return todoMapper.countSearch(keyword, category, from, to);
     }
 
     public Todo findById(Long id) {

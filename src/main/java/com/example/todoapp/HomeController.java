@@ -32,15 +32,23 @@ public class HomeController {
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "すべて") String category,
             @RequestParam(defaultValue = "asc") String order,
+            @RequestParam(defaultValue = "1") int page,
             Model model) {
+        if (page < 1) {
+            page = 1;
+        }
         if (!order.equals("desc")) {
             order = "asc";
         }
-        List<Todo> todos = todoService.search(keyword, category, order);
+        int totalCount = todoService.countSearch(keyword, category, null, null);
+        int totalPages = (totalCount + TodoService.PAGE_SIZE - 1) / TodoService.PAGE_SIZE;
+        List<Todo> todos = todoService.searchPage(keyword, category, order, null, null, page);
         model.addAttribute("todos", todos);
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", category);
         model.addAttribute("order", order);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPages", totalPages);
         return "todos";
     }
 

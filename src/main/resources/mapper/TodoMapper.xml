@@ -29,6 +29,51 @@
         </choose>
     </select>
 
+    <select id="searchPage" resultType="com.example.todoapp.Todo">
+        SELECT id, title, detail, category, priority, due_date, completed,
+               created_at, updated_at
+        FROM todos
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="category != null and category != '' and category != '縺吶∋縺ｦ'">
+                AND category = #{category}
+            </if>
+            <if test="from != null">
+                AND due_date &gt;= #{from}
+            </if>
+            <if test="to != null">
+                AND due_date &lt;= #{to}
+            </if>
+        </where>
+        ORDER BY due_date IS NULL ASC,
+        <choose>
+            <when test="order == 'desc'">due_date DESC</when>
+            <otherwise>due_date ASC</otherwise>
+        </choose>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countSearch" resultType="int">
+        SELECT COUNT(*)
+        FROM todos
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="category != null and category != '' and category != '縺吶∋縺ｦ'">
+                AND category = #{category}
+            </if>
+            <if test="from != null">
+                AND due_date &gt;= #{from}
+            </if>
+            <if test="to != null">
+                AND due_date &lt;= #{to}
+            </if>
+        </where>
+    </select>
+
     <select id="findById" parameterType="long" resultType="com.example.todoapp.Todo">
         SELECT id, title, detail, category, priority, due_date, completed,
                created_at, updated_at

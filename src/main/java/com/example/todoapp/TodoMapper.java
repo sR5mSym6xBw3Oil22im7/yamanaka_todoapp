@@ -15,6 +15,19 @@ public interface TodoMapper {
                       @Param("from") LocalDate from,
                       @Param("to") LocalDate to);
 
+    List<Todo> searchPage(@Param("keyword") String keyword,
+                          @Param("category") String category,
+                          @Param("order") String order,
+                          @Param("from") LocalDate from,
+                          @Param("to") LocalDate to,
+                          @Param("limit") int limit,
+                          @Param("offset") int offset);
+
+    int countSearch(@Param("keyword") String keyword,
+                    @Param("category") String category,
+                    @Param("from") LocalDate from,
+                    @Param("to") LocalDate to);
+
     Todo findById(Long id);
 
     void insert(Todo todo);
