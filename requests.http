@@ -75,3 +75,19 @@ Content-Type: application/json
 
 ### 11. MCPの窓口を確かめる
 POST http://localhost:8080/mcp
+
+### 12. 窓口と会話を始める
+POST http://localhost:8080/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {},
+    "clientInfo": { "name": "requests.http", "version": "1.0" }
+  }
+}
