@@ -18,8 +18,38 @@ public class CalendarController {
     public String calendar(
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer day,
+            @RequestParam(defaultValue = "month") String view,
             Model model) {
         LocalDate today = LocalDate.now();
+        boolean weekView = "week".equalsIgnoreCase(view);
+
+        if (weekView) {
+            LocalDate selectedDay = day != null
+                    ? LocalDate.of(year != null ? year : today.getYear(),
+                    month != null ? month : today.getMonthValue(), day)
+                    : today;
+            LocalDate weekStart = selectedDay.minusDays(selectedDay.getDayOfWeek().getValue() % 7);
+            LocalDate weekEnd = weekStart.plusDays(6);
+            List<LocalDate> calendarDays = new ArrayList<>();
+            for (LocalDate current = weekStart; !current.isAfter(weekEnd); current = current.plusDays(1)) {
+                calendarDays.add(current);
+            }
+
+            model.addAttribute("weekView", true);
+            model.addAttribute("weekStart", weekStart);
+            model.addAttribute("weekEnd", weekEnd);
+            model.addAttribute("firstDay", weekStart);
+            model.addAttribute("lastDay", weekEnd);
+            model.addAttribute("calendarDays", calendarDays);
+            model.addAttribute("calendarWeeks", List.of(calendarDays));
+            model.addAttribute("previousWeekStart", weekStart.minusDays(7));
+            model.addAttribute("nextWeekStart", weekStart.plusDays(7));
+            model.addAttribute("year", selectedDay.getYear());
+            model.addAttribute("month", selectedDay.getMonthValue());
+            return "calendar";
+        }
+
         YearMonth displayedMonth = YearMonth.of(
                 year != null ? year : today.getYear(),
                 month != null ? month : today.getMonthValue());
@@ -31,9 +61,11 @@ public class CalendarController {
                 - lastDay.getDayOfWeek().getValue() + 7) % 7);
 
         List<LocalDate> calendarDays = new ArrayList<>();
-        for (LocalDate day = calendarStart; !day.isAfter(calendarEnd); day = day.plusDays(1)) {
-            calendarDays.add(YearMonth.from(day).equals(displayedMonth)
-                    ? day
+        for (LocalDate calendarDay = calendarStart;
+             !calendarDay.isAfter(calendarEnd);
+             calendarDay = calendarDay.plusDays(1)) {
+            calendarDays.add(YearMonth.from(calendarDay).equals(displayedMonth)
+                    ? calendarDay
                     : null);
         }
 
@@ -45,6 +77,7 @@ public class CalendarController {
         YearMonth previousMonth = displayedMonth.minusMonths(1);
         YearMonth nextMonth = displayedMonth.plusMonths(1);
         model.addAttribute("displayedMonth", displayedMonth);
+        model.addAttribute("weekView", false);
         model.addAttribute("year", displayedMonth.getYear());
         model.addAttribute("month", displayedMonth.getMonthValue());
         model.addAttribute("firstDay", firstDay);

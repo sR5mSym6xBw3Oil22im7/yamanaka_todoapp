@@ -179,6 +179,10 @@ body {
    vertical-align: top;
 }
 
+.calendar-week-table td {
+   height: 260px;
+}
+
 .calendar-table th:first-child {
    color: #f87171;
 }
