@@ -25,17 +25,32 @@ public class TodoService {
 
     public List<Todo> search(String keyword, String category, String order,
                              LocalDate from, LocalDate to) {
-        return todoMapper.search(keyword, category, order, from, to);
+        return todoMapper.search(keyword, category, order, from, to, false);
+    }
+
+    public List<Todo> search(String keyword, String category, String order,
+                             LocalDate from, LocalDate to, boolean trash) {
+        return todoMapper.search(keyword, category, order, from, to, trash);
     }
 
     public List<Todo> searchPage(String keyword, String category, String order,
                                  LocalDate from, LocalDate to, int page) {
         return todoMapper.searchPage(keyword, category, order, from, to,
-                PAGE_SIZE, (page - 1) * PAGE_SIZE);
+                PAGE_SIZE, (page - 1) * PAGE_SIZE, false);
+    }
+
+    public List<Todo> searchPage(String keyword, String category, String order,
+                                 LocalDate from, LocalDate to, int page, boolean trash) {
+        return todoMapper.searchPage(keyword, category, order, from, to,
+                PAGE_SIZE, (page - 1) * PAGE_SIZE, trash);
     }
 
     public int countSearch(String keyword, String category, LocalDate from, LocalDate to) {
-        return todoMapper.countSearch(keyword, category, from, to);
+        return todoMapper.countSearch(keyword, category, from, to, false);
+    }
+
+    public int countSearch(String keyword, String category, LocalDate from, LocalDate to, boolean trash) {
+        return todoMapper.countSearch(keyword, category, from, to, trash);
     }
 
     public Todo findById(Long id) {
@@ -63,7 +78,16 @@ public class TodoService {
     }
 
     public void delete(Long id) {
-        todoMapper.deleteById(id);
-        log.info("Todo deleted successfully: id={}", id);
+        todoMapper.markDeleted(id);
+        log.info("Todo marked deleted successfully: id={}", id);
+    }
+
+    public Todo findDeletedById(Long id) {
+        return todoMapper.findDeletedById(id);
+    }
+
+    public void restore(Long id) {
+        todoMapper.restoreById(id);
+        log.info("Todo restored successfully: id={}", id);
     }
 }

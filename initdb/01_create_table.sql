@@ -9,6 +9,7 @@ CREATE TABLE todos (
     completed_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME NULL,
 
     PRIMARY KEY (id),
     CONSTRAINT chk_todos_category
@@ -16,7 +17,8 @@ CREATE TABLE todos (
     CONSTRAINT chk_todos_priority
         CHECK (priority IN (1, 2, 3)),
     INDEX idx_todos_category (category),
-    INDEX idx_todos_due_date (due_date)
+    INDEX idx_todos_due_date (due_date),
+    INDEX idx_todos_deleted_at (deleted_at)
 ) ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

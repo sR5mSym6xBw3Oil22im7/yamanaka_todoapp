@@ -11,7 +11,9 @@
         <p class="flash" th:if="${message}" th:text="${message}"></p>
         <h1 class="page-title">やること一覧</h1>
 
-        <p><a class="btn" href="/todos/new">新規登録</a> <a class="btn sub" href="/calendar">カレンダーで見る</a></p>
+        <p><a class="btn" href="/todos/new">新規登録</a> <a class="btn sub" href="/calendar">カレンダーで見る</a>
+            <a class="btn sub" th:if="${trash == 0}" href="/todos?trash=1">削除したもの</a>
+            <a class="btn sub" th:if="${trash == 1}" href="/todos">通常の一覧</a></p>
 
         <form class="search-bar" method="get" action="/todos">
             <label class="form-label" for="keyword">やることの名前</label>
@@ -60,14 +62,15 @@
                 </td>
                 <td th:text="${todo.dueDate}"></td>
                 <td th:text="${todo.completed ? '完了' : '未完了'}"></td>
-                <td><a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a> <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a></td>
+                <td th:if="${trash == 0}"><a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a> <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a></td>
+                <td th:if="${trash == 1}"><form th:action="@{/todos/{id}/restore(id=${todo.id})}" method="post"><button class="link" type="submit">元に戻す</button></form></td>
             </tr>
             </tbody>
         </table>
 
         <nav class="pagination" th:if="${totalPages > 0}" aria-label="Pages">
             <a class="link" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
-               th:href="@{/todos(keyword=${keyword}, category=${category}, order=${order}, page=${pageNumber})}"
+               th:href="@{/todos(keyword=${keyword}, category=${category}, order=${order}, page=${pageNumber}, trash=${trash})}"
                th:text="${pageNumber}"
                th:classappend="${pageNumber == page} ? ' current' : ''"></a>
         </nav>

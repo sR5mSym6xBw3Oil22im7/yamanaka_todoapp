@@ -25,5 +25,12 @@ public class TodoDatabaseMigration {
         if (columnCount != null && columnCount == 0) {
             jdbcTemplate.execute("ALTER TABLE todos ADD COLUMN completed_at DATETIME NULL");
         }
+        Integer deletedAtColumnCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.columns "
+                        + "WHERE table_schema = DATABASE() AND table_name = 'todos' "
+                        + "AND column_name = 'deleted_at'", Integer.class);
+        if (deletedAtColumnCount != null && deletedAtColumnCount == 0) {
+            jdbcTemplate.execute("ALTER TABLE todos ADD COLUMN deleted_at DATETIME NULL");
+        }
     }
 }

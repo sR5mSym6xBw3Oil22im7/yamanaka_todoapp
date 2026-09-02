@@ -33,6 +33,7 @@ public class HomeController {
             @RequestParam(defaultValue = "すべて") String category,
             @RequestParam(defaultValue = "asc") String order,
             @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int trash,
             Model model) {
         if (page < 1) {
             page = 1;
@@ -40,15 +41,17 @@ public class HomeController {
         if (!order.equals("desc")) {
             order = "asc";
         }
-        int totalCount = todoService.countSearch(keyword, category, null, null);
+        boolean trashView = trash == 1;
+        int totalCount = todoService.countSearch(keyword, category, null, null, trashView);
         int totalPages = (totalCount + TodoService.PAGE_SIZE - 1) / TodoService.PAGE_SIZE;
-        List<Todo> todos = todoService.searchPage(keyword, category, order, null, null, page);
+        List<Todo> todos = todoService.searchPage(keyword, category, order, null, null, page, trashView);
         model.addAttribute("todos", todos);
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", category);
         model.addAttribute("order", order);
         model.addAttribute("page", page);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("trash", trashView ? 1 : 0);
         return "todos";
     }
 
@@ -137,5 +140,16 @@ public class HomeController {
         todoService.delete(id);
         redirectAttributes.addFlashAttribute("message", "削除しました");
         return "redirect:/todos";
+    }
+
+    @PostMapping("/todos/{id}/restore")
+    public String restore(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (todoService.findDeletedById(id) == null) {
+            redirectAttributes.addFlashAttribute("message", "見つかりませんでした");
+            return "redirect:/todos?trash=1";
+        }
+        todoService.restore(id);
+        redirectAttributes.addFlashAttribute("message", "元に戻しました");
+        return "redirect:/todos?trash=1";
     }
 }

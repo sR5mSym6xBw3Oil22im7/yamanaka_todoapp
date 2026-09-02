@@ -6,9 +6,13 @@
 
     <select id="search" resultType="com.example.todoapp.Todo">
         SELECT id, title, detail, category, priority, due_date, completed, completed_at,
-               created_at, updated_at
+               created_at, updated_at, deleted_at
         FROM todos
         <where>
+            <choose>
+                <when test="trash">AND deleted_at IS NOT NULL</when>
+                <otherwise>AND deleted_at IS NULL</otherwise>
+            </choose>
             <if test="keyword != null and keyword != ''">
                 AND title LIKE CONCAT('%', #{keyword}, '%')
             </if>
@@ -31,9 +35,13 @@
 
     <select id="searchPage" resultType="com.example.todoapp.Todo">
         SELECT id, title, detail, category, priority, due_date, completed, completed_at,
-               created_at, updated_at
+               created_at, updated_at, deleted_at
         FROM todos
         <where>
+            <choose>
+                <when test="trash">AND deleted_at IS NOT NULL</when>
+                <otherwise>AND deleted_at IS NULL</otherwise>
+            </choose>
             <if test="keyword != null and keyword != ''">
                 AND title LIKE CONCAT('%', #{keyword}, '%')
             </if>
@@ -59,6 +67,10 @@
         SELECT COUNT(*)
         FROM todos
         <where>
+            <choose>
+                <when test="trash">AND deleted_at IS NOT NULL</when>
+                <otherwise>AND deleted_at IS NULL</otherwise>
+            </choose>
             <if test="keyword != null and keyword != ''">
                 AND title LIKE CONCAT('%', #{keyword}, '%')
             </if>
@@ -76,9 +88,16 @@
 
     <select id="findById" parameterType="long" resultType="com.example.todoapp.Todo">
         SELECT id, title, detail, category, priority, due_date, completed, completed_at,
-               created_at, updated_at
+               created_at, updated_at, deleted_at
         FROM todos
-        WHERE id = #{id}
+        WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+
+    <select id="findDeletedById" parameterType="long" resultType="com.example.todoapp.Todo">
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at,
+               created_at, updated_at, deleted_at
+        FROM todos
+        WHERE id = #{id} AND deleted_at IS NOT NULL
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -98,9 +117,14 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="deleteById" parameterType="long">
-        DELETE FROM todos
-        WHERE id = #{id}
-    </delete>
+    <update id="markDeleted" parameterType="long">
+        UPDATE todos SET deleted_at = CURRENT_TIMESTAMP
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+
+    <update id="restoreById" parameterType="long">
+        UPDATE todos SET deleted_at = NULL
+        WHERE id = #{id} AND deleted_at IS NOT NULL
+    </update>
 
 </mapper>
