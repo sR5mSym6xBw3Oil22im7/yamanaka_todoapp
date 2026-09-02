@@ -142,6 +142,13 @@ public class HomeController {
         return "redirect:/todos";
     }
 
+    @PostMapping("/todo/bulk-delete")
+    public String bulkDelete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
+        todoService.bulkDelete(ids);
+        redirectAttributes.addFlashAttribute("message", "選択した項目を削除しました");
+        return "redirect:/todos";
+    }
+
     @PostMapping("/todos/{id}/restore")
     public String restore(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         if (todoService.findDeletedById(id) == null) {

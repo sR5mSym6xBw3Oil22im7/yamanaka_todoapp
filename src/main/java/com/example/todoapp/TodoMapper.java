@@ -41,6 +41,8 @@ public interface TodoMapper {
 
     void markDeleted(Long id);
 
+    void markDeletedByIds(@Param("ids") List<Integer> ids);
+
     void restoreById(Long id);
 
     void togglePinned(Long id);

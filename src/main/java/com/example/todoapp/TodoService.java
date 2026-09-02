@@ -83,6 +83,14 @@ public class TodoService {
         log.info("Todo marked deleted successfully: id={}", id);
     }
 
+    public void bulkDelete(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        todoMapper.markDeletedByIds(ids);
+        log.info("Todos marked deleted successfully: count={}", ids.size());
+    }
+
     public Todo findDeletedById(Long id) {
         return todoMapper.findDeletedById(id);
     }

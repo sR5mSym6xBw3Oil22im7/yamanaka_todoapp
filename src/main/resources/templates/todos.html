@@ -41,9 +41,15 @@
             <a class="btn sub" th:href="@{/api/todos.csv(keyword=${keyword}, category=${category}, order=${order}, trash=${trash})}">CSVで書き出す</a>
         </p>
 
+        <form id="bulk-delete-form" th:if="${trash == 0}" action="/todo/bulk-delete" method="post"
+              onsubmit="return confirmBulkDelete(event)">
+            <button class="btn" type="submit">選択した項目を削除</button>
+        </form>
+
         <table class="todo-table" th:if="${!#lists.isEmpty(todos)}">
             <thead>
             <tr>
+                <th th:if="${trash == 0}"><label for="select-all">全選択</label><input id="select-all" type="checkbox"></th>
                 <th>印</th>
                 <th>やること</th>
                 <th>ジャンル</th>
@@ -57,6 +63,9 @@
             <tr th:each="todo : ${todos}"
                 th:attr="data-completed-at=${todo.completedAt}"
                 th:classappend="${todo.dueDate != null and todo.dueDate.isBefore(T(java.time.LocalDate).now()) and !todo.completed} ? ' overdue' : ''">
+                <td th:if="${trash == 0}">
+                    <input class="todo-checkbox" type="checkbox" name="ids" th:value="${todo.id}" form="bulk-delete-form">
+                </td>
                 <td>
                     <form th:if="${trash == 0}" th:action="@{/todos/{id}/pin(id=${todo.id})}" method="post">
                         <input type="hidden" name="keyword" th:value="${keyword}">
@@ -91,6 +100,30 @@
         <p th:if="${#lists.isEmpty(todos)}">まだ1件も登録されていません</p>
     </div>
     <script>
+        const selectAll = document.getElementById('select-all');
+        const todoCheckboxes = document.querySelectorAll('.todo-checkbox');
+
+        selectAll?.addEventListener('change', () => {
+            todoCheckboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
+        });
+
+        todoCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                if (selectAll) {
+                    selectAll.checked = [...todoCheckboxes].every(item => item.checked);
+                }
+            });
+        });
+
+        function confirmBulkDelete(event) {
+            if (![...todoCheckboxes].some(checkbox => checkbox.checked)) {
+                event.preventDefault();
+                alert('削除する項目を選択してください');
+                return false;
+            }
+            return confirm('選択した項目を削除します。よろしいですか？');
+        }
+
         document.querySelectorAll('[data-completed-at]').forEach(row => {
             const completedAt = row.dataset.completedAt;
             if (completedAt && row.cells.length > 4) {

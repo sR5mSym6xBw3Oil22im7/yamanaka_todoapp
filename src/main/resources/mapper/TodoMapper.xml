@@ -123,6 +123,15 @@
         WHERE id = #{id} AND deleted_at IS NULL
     </update>
 
+    <update id="markDeletedByIds">
+        UPDATE todos SET deleted_at = CURRENT_TIMESTAMP
+        WHERE deleted_at IS NULL
+          AND id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
     <update id="restoreById" parameterType="long">
         UPDATE todos SET deleted_at = NULL
         WHERE id = #{id} AND deleted_at IS NOT NULL
