@@ -40,7 +40,7 @@ GET http://localhost:8080/api/holidays
 ### 7. 期間指定で一覧取得する
 GET http://localhost:8080/api/todos?from=2026-08-01&to=2026-08-30
 
-### 就職活動の準備1
+### 8.就職活動の準備1
 POST http://localhost:8080/api/todos
 Content-Type: application/json
 
@@ -62,7 +62,7 @@ Content-Type: application/json
   "dueDate": "2026-04-04"
 }
 
-### 就職活動の準備3
+###10. 就職活動の準備3
 POST http://localhost:8080/api/todos
 Content-Type: application/json
 
@@ -72,3 +72,6 @@ Content-Type: application/json
   "priority": 1,
   "dueDate": "2026-04-04"
 }
+
+### 11. MCPの窓口を確かめる
+POST http://localhost:8080/mcp
