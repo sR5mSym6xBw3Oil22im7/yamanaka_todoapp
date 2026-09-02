@@ -37,6 +37,8 @@
             <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='asc')}">期限が近い順</a>
             &nbsp;
             <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='desc')}">期限が遠い順</a>
+            &nbsp;
+            <a class="btn sub" th:href="@{/api/todos.csv(keyword=${keyword}, category=${category}, order=${order}, trash=${trash})}">CSVで書き出す</a>
         </p>
 
         <table class="todo-table" th:if="${!#lists.isEmpty(todos)}">

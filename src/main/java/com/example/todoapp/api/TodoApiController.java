@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -45,6 +46,57 @@ public class TodoApiController {
                 .stream()
                 .map(TodoDto::from)
                 .toList();
+    }
+
+    @GetMapping(value = "/api/todos.csv", produces = "text/csv")
+    public ResponseEntity<byte[]> todosCsv(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "すべて") String category,
+            @RequestParam(defaultValue = "asc") String order,
+            @RequestParam(defaultValue = "0") int trash) {
+        List<Todo> todos = todoService.search(keyword, category, order,
+                null, null, trash == 1);
+
+        StringBuilder csv = new StringBuilder("\uFEFF");
+        csv.append("やること,メモ,ジャンル,優先度,期限,状態\r\n");
+        for (Todo todo : todos) {
+            appendCsvRow(csv,
+                    todo.getTitle(),
+                    todo.getDetail(),
+                    todo.getCategory(),
+                    priorityLabel(todo.getPriority()),
+                    todo.getDueDate(),
+                    Boolean.TRUE.equals(todo.getCompleted()) ? "完了" : "未完了");
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
+                .header("Content-Disposition", "attachment; filename=\"todos.csv\"")
+                .body(csv.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void appendCsvRow(StringBuilder csv, Object... values) {
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                csv.append(',');
+            }
+            String value = values[i] == null ? "" : values[i].toString();
+            if (value.startsWith("=") || value.startsWith("+")
+                    || value.startsWith("-") || value.startsWith("@")) {
+                value = "'" + value;
+            }
+            csv.append('"').append(value.replace("\"", "\"\""))
+                    .append('"');
+        }
+        csv.append("\r\n");
+    }
+
+    private String priorityLabel(Integer priority) {
+        return priority == null ? "" : switch (priority) {
+            case 1 -> "高";
+            case 2 -> "中";
+            default -> "低";
+        };
     }
 
     @GetMapping("/api/todos/{id}")
