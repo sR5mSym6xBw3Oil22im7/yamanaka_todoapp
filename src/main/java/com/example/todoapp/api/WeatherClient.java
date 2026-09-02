@@ -20,9 +20,7 @@ public class WeatherClient {
     private static final Logger logger = LoggerFactory.getLogger(WeatherClient.class);
 
     private static final String WEATHER_URL =
-            "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917"
-                    + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
-                    + "&timezone=Asia/Tokyo&forecast_days=16";
+            "https://www.jma.go.jp/bosai/forecast/data/forecast/130000.json";
 
     private final RestClient restClient;
     private final JsonMapper jsonMapper;
@@ -45,20 +43,19 @@ public class WeatherClient {
                     .uri(WEATHER_URL)
                     .retrieve()
                     .body(String.class);
-            Map<String, Object> response = jsonMapper.readValue(responseBody, Map.class);
-            if (response == null || !(response.get("daily") instanceof Map<?, ?> daily)) {
+            List<?> forecasts = jsonMapper.readValue(responseBody, List.class);
+            if (forecasts == null || forecasts.isEmpty()) {
                 return new FetchResult(Collections.emptyMap(), true);
             }
 
-            List<?> dates = listValue(daily, "time");
             Map<String, Weather> weatherByDate = new LinkedHashMap<>();
-            int count = dates == null ? 0 : dates.size();
-            for (int index = 0; index < count; index++) {
-                weatherByDate.put(String.valueOf(dates.get(index)), new Weather(
-                        integerAt(daily, "weather_code", index),
-                        doubleAt(daily, "temperature_2m_max", index),
-                        doubleAt(daily, "temperature_2m_min", index),
-                        integerAt(daily, "precipitation_probability_max", index)));
+            for (Object forecastValue : forecasts) {
+                if (forecastValue instanceof Map<?, ?> forecast) {
+                    readTimeSeries(forecast, weatherByDate);
+                }
+            }
+            if (weatherByDate.isEmpty()) {
+                return new FetchResult(Collections.emptyMap(), true);
             }
             return new FetchResult(weatherByDate, false);
         } catch (RuntimeException e) {
@@ -67,28 +64,128 @@ public class WeatherClient {
         }
     }
 
+    private void readTimeSeries(Map<?, ?> forecast, Map<String, Weather> weatherByDate) {
+        List<?> timeSeries = listValue(forecast, "timeSeries");
+        if (timeSeries == null) {
+            return;
+        }
+        for (Object seriesValue : timeSeries) {
+            if (!(seriesValue instanceof Map<?, ?> series)) {
+                continue;
+            }
+            List<?> dates = listValue(series, "timeDefines");
+            Map<?, ?> area = findArea(series);
+            if (dates == null || area == null) {
+                continue;
+            }
+
+            List<?> weatherCodes = listValue(area, "weatherCodes");
+            List<?> weathers = listValue(area, "weathers");
+            List<?> precipitationProbabilities = listValue(area, "pops");
+            List<?> maxTemperatures = listValue(area, "tempsMax");
+            List<?> minTemperatures = listValue(area, "tempsMin");
+
+            for (int index = 0; index < dates.size(); index++) {
+                String date = dateOnly(dates.get(index));
+                if (date == null) {
+                    continue;
+                }
+                Weather current = weatherByDate.get(date);
+                Integer weatherCode = current == null ? null : current.weatherCode();
+                String weatherText = current == null ? null : current.weatherText();
+                Integer precipitationProbability = current == null
+                        ? null : current.precipitationProbability();
+                Double temperatureMax = current == null ? null : current.temperatureMax();
+                Double temperatureMin = current == null ? null : current.temperatureMin();
+
+                if (weatherCodes != null) {
+                    weatherCode = integerValueAt(weatherCodes, index);
+                }
+                if (weathers != null) {
+                    weatherText = stringValueAt(weathers, index);
+                }
+                if (precipitationProbabilities != null) {
+                    precipitationProbability = integerValueAt(precipitationProbabilities, index);
+                }
+                if (maxTemperatures != null) {
+                    temperatureMax = doubleValueAt(maxTemperatures, index);
+                }
+                if (minTemperatures != null) {
+                    temperatureMin = doubleValueAt(minTemperatures, index);
+                }
+
+                if (weatherCode != null || weatherText != null || precipitationProbability != null
+                        || temperatureMax != null || temperatureMin != null) {
+                    weatherByDate.put(date, new Weather(weatherCode, weatherText, temperatureMax,
+                            temperatureMin, precipitationProbability));
+                }
+            }
+        }
+    }
+
+    private Map<?, ?> findArea(Map<?, ?> series) {
+        List<?> areas = listValue(series, "areas");
+        if (areas == null) {
+            return null;
+        }
+        for (Object areaValue : areas) {
+            if (!(areaValue instanceof Map<?, ?> area)) {
+                continue;
+            }
+            Object areaInfo = area.get("area");
+            if (areaInfo instanceof Map<?, ?> areaDetails
+                    && ("130010".equals(String.valueOf(areaDetails.get("code")))
+                    || "44132".equals(String.valueOf(areaDetails.get("code"))))) {
+                return area;
+            }
+        }
+        return null;
+    }
+
     private List<?> listValue(Map<?, ?> values, String key) {
         return values.get(key) instanceof List<?> list ? list : null;
     }
 
-    private Integer integerAt(Map<?, ?> values, String key, int index) {
-        List<?> list = listValue(values, key);
-        return list != null && index < list.size() && list.get(index) instanceof Number number
-                ? number.intValue()
-                : null;
+    private String dateOnly(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String dateTime = String.valueOf(value);
+        return dateTime.length() >= 10 ? dateTime.substring(0, 10) : null;
     }
 
-    private Double doubleAt(Map<?, ?> values, String key, int index) {
-        List<?> list = listValue(values, key);
-        return list != null && index < list.size() && list.get(index) instanceof Number number
-                ? number.doubleValue()
+    private Integer integerValueAt(List<?> values, int index) {
+        if (index >= values.size() || values.get(index) == null || String.valueOf(values.get(index)).isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(String.valueOf(values.get(index)));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private Double doubleValueAt(List<?> values, int index) {
+        if (index >= values.size() || values.get(index) == null || String.valueOf(values.get(index)).isBlank()) {
+            return null;
+        }
+        try {
+            return Double.valueOf(String.valueOf(values.get(index)));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String stringValueAt(List<?> values, int index) {
+        return index < values.size() && values.get(index) != null
+                ? String.valueOf(values.get(index)).trim()
                 : null;
     }
 
     public record FetchResult(Map<String, Weather> weather, boolean unavailable) {
     }
 
-    public record Weather(Integer weatherCode, Double temperatureMax, Double temperatureMin,
+    public record Weather(Integer weatherCode, String weatherText, Double temperatureMax, Double temperatureMin,
                           Integer precipitationProbability) {
     }
 
