@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -107,6 +109,34 @@ public class TodoTools {
     public void deleteTodo(
             @McpToolParam(description = "やることのID", required = true) Long id) {
         todoService.delete(id);
+    }
+
+    @McpTool(name = "summarize_week", description = "期間内のやることを一覧ではなく、総件数・ジャンルごとの件数・期限が過ぎた未完了の件数に数えて要約する")
+    public TodoSummary summarizeWeek(
+            @McpToolParam(description = "期間の始まり（yyyy-MM-dd）", required = false) String from,
+            @McpToolParam(description = "期間の終わり（yyyy-MM-dd）", required = false) String to) {
+        LocalDate fromDate = from == null ? null : LocalDate.parse(from);
+        LocalDate toDate = to == null ? null : LocalDate.parse(to);
+        List<Todo> todos = todoService.search(null, null, "asc", fromDate, toDate);
+
+        Map<String, Integer> categoryBreakdown = new LinkedHashMap<>();
+        int overdueCount = 0;
+        LocalDate today = LocalDate.now();
+        for (Todo todo : todos) {
+            categoryBreakdown.merge(todo.getCategory(), 1, Integer::sum);
+            if (todo.getDueDate() != null
+                    && todo.getDueDate().isBefore(today)
+                    && !Boolean.TRUE.equals(todo.getCompleted())) {
+                overdueCount++;
+            }
+        }
+        return new TodoSummary(todos.size(), categoryBreakdown, overdueCount);
+    }
+
+    public record TodoSummary(
+            int totalCount,
+            Map<String, Integer> categoryBreakdown,
+            int overdueCount) {
     }
 
     @McpTool(name = "find_free_days", description = "期間の中で、期限のやることが無く、土日でも祝日でもない「空いている日」を返す。やることの期限を動かす先を決めるのに使う")
