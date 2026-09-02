@@ -53,7 +53,10 @@
                 th:classappend="${todo.dueDate != null and todo.dueDate.isBefore(T(java.time.LocalDate).now()) and !todo.completed} ? ' overdue' : ''">
                 <td th:text="${todo.title}"></td>
                 <td th:text="${todo.category}"></td>
-                <td th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></td>
+                <td>
+                    <span th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></span>
+                    <span class="priority-mark" th:if="${todo.priority == 1}" aria-label="優先度の目印">★</span>
+                </td>
                 <td th:text="${todo.dueDate}"></td>
                 <td th:text="${todo.completed ? '完了' : '未完了'}"></td>
                 <td><a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a> <a class="link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a></td>
