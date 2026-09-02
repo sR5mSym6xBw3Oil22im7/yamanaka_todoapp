@@ -50,6 +50,7 @@
             </thead>
             <tbody>
             <tr th:each="todo : ${todos}"
+                th:attr="data-completed-at=${todo.completedAt}"
                 th:classappend="${todo.dueDate != null and todo.dueDate.isBefore(T(java.time.LocalDate).now()) and !todo.completed} ? ' overdue' : ''">
                 <td th:text="${todo.title}"></td>
                 <td th:text="${todo.category}"></td>
@@ -73,5 +74,15 @@
 
         <p th:if="${#lists.isEmpty(todos)}">まだ1件も登録されていません</p>
     </div>
+    <script>
+        document.querySelectorAll('[data-completed-at]').forEach(row => {
+            const completedAt = row.dataset.completedAt;
+            if (completedAt && row.cells.length > 4) {
+                const date = document.createElement('span');
+                date.textContent = ` ${completedAt}`;
+                row.cells[4].appendChild(date);
+            }
+        });
+    </script>
 </body>
 </html>

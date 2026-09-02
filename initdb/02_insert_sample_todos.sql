@@ -10,3 +10,8 @@ VALUES
     ('todo-13', NULL, CONVERT(0xE38387E382B6E382A4E383B3 USING utf8mb4), 2, NULL, false),
     ('todo-14', NULL, CONVERT(0xE38387E382B6E382A4E383B3 USING utf8mb4), 2, NULL, false),
     ('todo-15', NULL, CONVERT(0xE38387E382B6E382A4E383B3 USING utf8mb4), 2, NULL, false);
+
+UPDATE todos
+SET completed = TRUE,
+    completed_at = '2026-04-05 00:00:00'
+WHERE title = 'todo-06';

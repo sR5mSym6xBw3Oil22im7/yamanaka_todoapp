@@ -5,7 +5,7 @@
 <mapper namespace="com.example.todoapp.TodoMapper">
 
     <select id="search" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed,
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at,
                created_at, updated_at
         FROM todos
         <where>
@@ -30,7 +30,7 @@
     </select>
 
     <select id="searchPage" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed,
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at,
                created_at, updated_at
         FROM todos
         <where>
@@ -75,7 +75,7 @@
     </select>
 
     <select id="findById" parameterType="long" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed,
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at,
                created_at, updated_at
         FROM todos
         WHERE id = #{id}
@@ -93,7 +93,8 @@
             category = #{category},
             priority = #{priority},
             due_date = #{dueDate},
-            completed = #{completed}
+            completed = #{completed},
+            completed_at = #{completedAt}
         WHERE id = #{id}
     </update>
 
