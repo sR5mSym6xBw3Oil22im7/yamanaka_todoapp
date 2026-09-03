@@ -57,6 +57,25 @@ docker compose up -d --build
 docker compose down
 ```
 
+### ローカルで実行する場合
+
+MySQLに `todoapp` データベースを用意し、接続情報を設定してください。既定値は次のとおりです。
+
+| 項目 | 値 |
+|---|---|
+| ホスト | `localhost:3306` |
+| データベース | `todoapp` |
+| ユーザー | `root` |
+| パスワード | `password` |
+
+次のコマンドで起動します。
+
+```powershell
+./mvnw spring-boot:run
+```
+
+Windowsでは `./mvnw.cmd spring-boot:run` も使用できます。
+
 ## 画面とURL
 
 | 画面 | URL | 内容 |
