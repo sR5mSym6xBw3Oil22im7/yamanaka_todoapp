@@ -33,35 +33,29 @@ Spring Bootで作成した、タスク（Todo）の登録・管理アプリケ�
 
 ### Docker Composeを使用する場合
 
-プロジェクトのルートで、MySQLのrootパスワードを設定して起動します。
+プロジェクトのルートに `.env` ファイルを作成し、MySQL管理者ユーザーのパスワードを設定します。
+
+```dotenv
+MYSQL_ROOT_PASSWORD="MYSQL管理者ユーザのパスワード"
+```
+
+その後、以下のコマンドで起動します。
 
 ```powershell
-$env:MYSQL_ROOT_PASSWORD = "MySQLのrootパスワード"
-docker compose up --build
+docker compose up -d --build
 ```
 
 起動後、<http://localhost:8080/> にアクセスしてください。
 
 初回起動時は、`initdb/` 配下のSQLファイルでデータベースとサンプルデータが初期化されます。
 
-### ローカルで実行する場合
+## 停止方法
 
-MySQLに `todoapp` データベースを用意し、接続情報を設定してください。既定値は次のとおりです。
-
-| 項目 | 値 |
-|---|---|
-| ホスト | `localhost:3306` |
-| データベース | `todoapp` |
-| ユーザー | `root` |
-| パスワード | `password` |
-
-次のコマンドで起動します。
+以下のコマンドで停止します。
 
 ```powershell
-./mvnw spring-boot:run
+docker compose down
 ```
-
-Windowsでは `./mvnw.cmd spring-boot:run` も使用できます。
 
 ## 画面とURL
 
